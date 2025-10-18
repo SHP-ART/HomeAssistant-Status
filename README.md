@@ -123,7 +123,19 @@ npm run lint
 
 ## Deployment für Production (Internet-Zugriff)
 
-### Vorbereitungen
+### 🔥 Nginx Proxy Manager Setup (Empfohlen)
+
+**Du nutzt Nginx Proxy Manager?** Perfekt! Siehe **[NGINX_PROXY_MANAGER_SETUP.md](./NGINX_PROXY_MANAGER_SETUP.md)** für eine komplette Schritt-für-Schritt-Anleitung.
+
+Mit Nginx Proxy Manager kannst du:
+- ✅ Statusseite im Internet veröffentlichen
+- ✅ Home Assistant intern lassen
+- ✅ API-Zugriff über Proxy absichern
+- ✅ Automatisches SSL mit Let's Encrypt
+
+---
+
+### Vorbereitungen (Manuelles Nginx Setup)
 
 **Wichtig:** Für Internet-Zugriff über eine Domain sind folgende Schritte notwendig:
 

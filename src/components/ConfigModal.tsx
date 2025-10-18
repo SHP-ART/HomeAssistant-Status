@@ -90,7 +90,11 @@ export function ConfigModal({ isOpen, onClose, onSave }: ConfigModalProps) {
               onChange={(e) => setUrl(e.target.value)}
               className="form-input"
             />
-            <small>Die URL deiner Home Assistant Instanz (inkl. Port)</small>
+            <small>
+              {window.location.protocol === 'https:' && window.location.hostname !== 'localhost'
+                ? 'Bei Nginx Proxy Manager: Gib deine Domain ein (z.B. https://ha-status.deine-domain.de)'
+                : 'Die URL deiner Home Assistant Instanz (z.B. http://192.168.1.100:8123)'}
+            </small>
             {window.location.protocol === 'https:' && url.startsWith('http://') && (
               <div style={{
                 marginTop: '0.5rem',
