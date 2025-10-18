@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { haService } from '../services/homeassistant';
-import { DeviceStatus } from '../components/DeviceStatus';
-import { SystemMetrics } from '../components/SystemMetrics';
-import { HistoricalChart } from '../components/HistoricalChart';
-import { defaultConfig, type DashboardConfig } from '../components/DashboardSettings';
+import { ValueTile } from '../components/tiles/ValueTile';
+import { ButtonTile } from '../components/tiles/ButtonTile';
+import { ToggleTile } from '../components/tiles/ToggleTile';
+import { MultiValueTile } from '../components/tiles/MultiValueTile';
+import { defaultDashboardConfig, type DashboardConfig } from '../types/dashboard';
 import { Layout } from 'lucide-react';
 
 export function Dashboard() {
   const [isConfigured, setIsConfigured] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected'>('disconnected');
-  const [dashboardConfig, setDashboardConfig] = useState<DashboardConfig>(defaultConfig);
+  const [dashboardConfig, setDashboardConfig] = useState<DashboardConfig>(defaultDashboardConfig);
 
   useEffect(() => {
     // Load HA config from localStorage
@@ -29,10 +30,15 @@ export function Dashboard() {
     const savedDashboard = localStorage.getItem('dashboard_config');
     if (savedDashboard) {
       try {
-        setDashboardConfig(JSON.parse(savedDashboard));
+        const config = JSON.parse(savedDashboard);
+        // Ensure tiles array exists (migration from old widget system)
+        if (!config.tiles) {
+          config.tiles = [];
+        }
+        setDashboardConfig(config);
       } catch (error) {
         console.error('Error loading dashboard config:', error);
-        setDashboardConfig(defaultConfig);
+        setDashboardConfig(defaultDashboardConfig);
       }
     }
   }, []);
@@ -46,8 +52,19 @@ export function Dashboard() {
     }
   };
 
-  const hasAnyWidgetEnabled = () => {
-    return Object.values(dashboardConfig.widgets).some((widget) => widget.enabled);
+  const renderTile = (tile: any) => {
+    switch (tile.type) {
+      case 'value':
+        return <ValueTile key={tile.id} tile={tile} />;
+      case 'button':
+        return <ButtonTile key={tile.id} tile={tile} />;
+      case 'toggle':
+        return <ToggleTile key={tile.id} tile={tile} />;
+      case 'multi-value':
+        return <MultiValueTile key={tile.id} tile={tile} />;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -66,23 +83,9 @@ export function Dashboard() {
 
       <main className="app-main">
         {isConfigured && connectionStatus === 'connected' ? (
-          hasAnyWidgetEnabled() ? (
-            <div className="dashboard">
-              {dashboardConfig.widgets.systemMetrics.enabled && (
-                <div className="dashboard-section">
-                  <SystemMetrics />
-                </div>
-              )}
-              {dashboardConfig.widgets.historicalChart.enabled && (
-                <div className="dashboard-section">
-                  <HistoricalChart />
-                </div>
-              )}
-              {dashboardConfig.widgets.deviceStatus.enabled && (
-                <div className="dashboard-section full-width">
-                  <DeviceStatus />
-                </div>
-              )}
+          dashboardConfig.tiles.length > 0 ? (
+            <div className="dashboard-tiles">
+              {dashboardConfig.tiles.map((tile) => renderTile(tile))}
             </div>
           ) : (
             <div className="empty-dashboard">

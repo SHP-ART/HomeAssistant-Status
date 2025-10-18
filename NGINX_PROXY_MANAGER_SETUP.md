@@ -4,12 +4,15 @@
 
 Diese Anleitung zeigt, wie du die Statusseite über das Internet erreichbar machst, während Home Assistant nur in deinem lokalen Netzwerk läuft.
 
+**Wichtig:** Der Admin-Bereich (`/admin`) ist nur aus dem lokalen Netzwerk erreichbar, während das öffentliche Dashboard (`/`) für alle zugänglich ist.
+
 ## Architektur
 
 ```
 Internet
    ↓
-https://ha-status.deine-domain.de (Statusseite - öffentlich)
+https://ha-status.deine-domain.de (Dashboard - öffentlich)
+https://ha-status.deine-domain.de/admin (Admin - NUR lokal)
    ↓
 Nginx Proxy Manager auf deinem Server
    ↓ (nur /api Anfragen werden weitergeleitet)
@@ -43,7 +46,24 @@ http://192.168.12.181:8123 (Home Assistant - intern)
 Füge folgende Custom Nginx Configuration hinzu:
 
 ```nginx
-# API Proxy zu Home Assistant (nur intern erreichbar)
+# Admin-Bereich NUR aus lokalem Netzwerk erreichbar
+location /admin {
+    # Erlaube nur lokales Netzwerk (PASSE DIES AN DEIN NETZWERK AN!)
+    allow 192.168.12.0/24;    # Dein lokales Netzwerk
+    allow 127.0.0.1;          # Localhost
+    deny all;                 # Alle anderen blockieren
+
+    try_files $uri $uri/ /index.html;
+
+    # Zusätzlicher Schutz: Zeige generische Fehlermeldung
+    error_page 403 = @forbidden;
+}
+
+location @forbidden {
+    return 404;  # Gibt 404 statt 403 zurück (versteckt dass Admin-Seite existiert)
+}
+
+# API Proxy zu Home Assistant
 location /api {
     proxy_pass http://192.168.12.181:8123;
     proxy_set_header Host $host;
@@ -73,7 +93,7 @@ location /api {
     }
 }
 
-# Statische Dateien der React App
+# Statische Dateien der React App (öffentlich zugänglich)
 location / {
     try_files $uri $uri/ /index.html;
 
@@ -82,6 +102,20 @@ location / {
         expires 1y;
         add_header Cache-Control "public, immutable";
     }
+}
+```
+
+**Wichtig:** Passe die IP-Range `192.168.12.0/24` an dein eigenes Netzwerk an:
+- Für `192.168.1.x` verwende: `192.168.1.0/24`
+- Für `192.168.0.x` verwende: `192.168.0.0/24`
+- Für `10.0.0.x` verwende: `10.0.0.0/24`
+
+Wenn du von einer festen externen IP aus Zugriff brauchst:
+```nginx
+location /admin {
+    allow 192.168.12.0/24;    # Lokales Netzwerk
+    allow 1.2.3.4;            # Deine feste externe IP
+    deny all;
 }
 ```
 
@@ -175,15 +209,38 @@ location /api {
 
 ## Testing
 
+### Test 1: Admin-Bereich (nur lokal)
+
+**Im lokalen Netzwerk:**
+1. **Öffne**: `https://ha-status.deine-domain.de/admin`
+2. **Erwartung**: ✅ Admin-Seite wird angezeigt
+3. **Konfiguriere** die Home Assistant Verbindung
+4. **Erstelle** Dashboard-Kacheln
+
+**Von außerhalb (z.B. mobile Daten):**
+1. **Öffne**: `https://ha-status.deine-domain.de/admin`
+2. **Erwartung**: ❌ 404 Fehler (Seite nicht gefunden)
+
+### Test 2: Öffentliches Dashboard
+
+**Von überall (Internet):**
 1. **Öffne**: `https://ha-status.deine-domain.de`
-2. **Konfigurationsmodal sollte erscheinen**
-3. **Gib ein**:
-   - URL: `https://ha-status.deine-domain.de`
-   - Token: Dein Long-Lived Access Token
-4. **Teste Verbindung**
-5. Bei Erfolg: ✅ Dashboard sollte Daten anzeigen
+2. **Erwartung**: ✅ Dashboard wird angezeigt
+3. **Dashboard zeigt**: Konfigurierte Kacheln mit Live-Daten
+
+### Test 3: API-Zugriff
+
+1. **Browser-Konsole öffnen** (F12)
+2. **Netzwerk-Tab** beobachten
+3. **Erwartung**: API-Calls zu `/api/states` erfolgreich (Status 200)
 
 ## Troubleshooting
+
+### Admin-Seite gibt 404 zurück (auch im lokalen Netzwerk)
+- Überprüfe die IP-Range in der Nginx Config (`192.168.12.0/24`)
+- Finde deine IP heraus: `ip addr` (Linux) oder `ipconfig` (Windows)
+- Passe die `allow` Zeile entsprechend an
+- Nginx Config neu laden (in NPM: Host speichern)
 
 ### CORS-Fehler trotz Konfiguration
 - Überprüfe, ob die Domain in `cors_allowed_origins` exakt gleich ist (inkl. https://)
@@ -197,6 +254,14 @@ location /api {
 ### Mixed Content Warnings
 - Stelle sicher, dass die Statusseite HTTPS verwendet
 - Stelle sicher, dass die URL in der Config HTTPS ist
+
+### Admin-Zugriff von extern trotz Sperre
+- Nginx Logs prüfen: Wird die IP korrekt erkannt?
+- Bei Cloudflare/Proxy: `set_real_ip_from` in Nginx Config setzen:
+```nginx
+set_real_ip_from 173.245.48.0/20;  # Cloudflare IPs
+real_ip_header CF-Connecting-IP;
+```
 
 ## Performance-Optimierung
 

@@ -1,6 +1,6 @@
 // Dashboard Konfiguration Typen
 
-export type TileType = 'value' | 'button' | 'toggle';
+export type TileType = 'value' | 'button' | 'toggle' | 'multi-value';
 
 export interface BaseTile {
   id: string;
@@ -10,12 +10,24 @@ export interface BaseTile {
   order: number;
 }
 
+export interface EntityConfig {
+  entityId: string;
+  label?: string;
+  unit?: string;
+}
+
 export interface ValueTile extends BaseTile {
   type: 'value';
   entityId: string;
   unit?: string;
   icon?: string;
   showLabel?: boolean;
+}
+
+export interface MultiValueTile extends BaseTile {
+  type: 'multi-value';
+  entities: EntityConfig[];
+  icon?: string;
 }
 
 export interface ButtonTile extends BaseTile {
@@ -32,7 +44,7 @@ export interface ToggleTile extends BaseTile {
   icon?: string;
 }
 
-export type Tile = ValueTile | ButtonTile | ToggleTile;
+export type Tile = ValueTile | MultiValueTile | ButtonTile | ToggleTile;
 
 export interface DashboardConfig {
   title: string;

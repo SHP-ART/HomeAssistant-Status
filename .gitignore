@@ -41,3 +41,11 @@ secrets.json
 .DS_Store
 .AppleDouble
 .LSOverride
+
+# Installation configuration
+.install-config
+update.sh.backup
+ecosystem.config.js
+
+# Backups
+backups/

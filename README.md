@@ -125,7 +125,10 @@ npm run lint
 
 ### 🔥 Nginx Proxy Manager Setup (Empfohlen)
 
-**Du nutzt Nginx Proxy Manager?** Perfekt! Siehe **[NGINX_PROXY_MANAGER_SETUP.md](./NGINX_PROXY_MANAGER_SETUP.md)** für eine komplette Schritt-für-Schritt-Anleitung.
+**Du nutzt Nginx Proxy Manager?** Perfekt! Wähle die passende Anleitung:
+
+- **[NGINX_PROXY_MANAGER_SETUP.md](./NGINX_PROXY_MANAGER_SETUP.md)** - Für Benutzer mit SSH-Zugang (automatisierte Bereitstellung)
+- **[MANUAL_DEPLOYMENT.md](./MANUAL_DEPLOYMENT.md)** - Für Benutzer OHNE SSH-Zugang (manuelle Bereitstellung via FTP/Web-Interface)
 
 Mit Nginx Proxy Manager kannst du:
 - ✅ Statusseite im Internet veröffentlichen

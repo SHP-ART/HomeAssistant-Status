@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react';
-import { Settings, Layout, Home } from 'lucide-react';
+import { Settings, Home, Plus, Edit2, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { haService } from '../services/homeassistant';
 import { ConfigModal } from '../components/ConfigModal';
-import { DashboardSettings, defaultConfig, type DashboardConfig } from '../components/DashboardSettings';
+import { TileEditor } from '../components/TileEditor';
+import { defaultDashboardConfig, type DashboardConfig, type Tile } from '../types/dashboard';
 
 export function Admin() {
   const [isConfigured, setIsConfigured] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
-  const [showDashboardSettings, setShowDashboardSettings] = useState(false);
+  const [showTileEditor, setShowTileEditor] = useState(false);
+  const [editingTile, setEditingTile] = useState<Tile | undefined>();
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected'>('disconnected');
-  const [dashboardConfig, setDashboardConfig] = useState<DashboardConfig>(defaultConfig);
+  const [dashboardConfig, setDashboardConfig] = useState<DashboardConfig>(defaultDashboardConfig);
+  const [dashboardTitle, setDashboardTitle] = useState('Home Assistant Status');
 
   useEffect(() => {
     // Load HA config from localStorage
@@ -30,10 +33,16 @@ export function Admin() {
     const savedDashboard = localStorage.getItem('dashboard_config');
     if (savedDashboard) {
       try {
-        setDashboardConfig(JSON.parse(savedDashboard));
+        const config = JSON.parse(savedDashboard);
+        // Ensure tiles array exists (migration from old widget system)
+        if (!config.tiles) {
+          config.tiles = [];
+        }
+        setDashboardConfig(config);
+        setDashboardTitle(config.title || 'Home Assistant Status');
       } catch (error) {
         console.error('Error loading dashboard config:', error);
-        setDashboardConfig(defaultConfig);
+        setDashboardConfig(defaultDashboardConfig);
       }
     }
   }, []);
@@ -52,13 +61,40 @@ export function Admin() {
     testConnection();
   };
 
-  const handleDashboardSave = (config: DashboardConfig) => {
+  const saveDashboardConfig = (config: DashboardConfig) => {
     setDashboardConfig(config);
     localStorage.setItem('dashboard_config', JSON.stringify(config));
   };
 
-  const hasAnyWidgetEnabled = () => {
-    return Object.values(dashboardConfig.widgets).some((widget) => widget.enabled);
+  const handleTitleSave = () => {
+    const newConfig = { ...dashboardConfig, title: dashboardTitle };
+    saveDashboardConfig(newConfig);
+  };
+
+  const handleAddTile = () => {
+    setEditingTile(undefined);
+    setShowTileEditor(true);
+  };
+
+  const handleEditTile = (tile: Tile) => {
+    setEditingTile(tile);
+    setShowTileEditor(true);
+  };
+
+  const handleSaveTile = (tile: Tile) => {
+    const tiles = editingTile
+      ? dashboardConfig.tiles.map((t) => (t.id === tile.id ? tile : t))
+      : [...dashboardConfig.tiles, tile];
+
+    const newConfig = { ...dashboardConfig, tiles };
+    saveDashboardConfig(newConfig);
+  };
+
+  const handleDeleteTile = (tileId: string) => {
+    const tiles = dashboardConfig.tiles.filter((t) => t.id !== tileId);
+    const newConfig = { ...dashboardConfig, tiles };
+    saveDashboardConfig(newConfig);
+    setShowTileEditor(false);
   };
 
   return (
@@ -108,44 +144,91 @@ export function Admin() {
 
             <div className="admin-card">
               <div className="admin-card-header">
-                <Layout size={24} />
-                <h2>Dashboard Konfiguration</h2>
+                <Settings size={24} />
+                <h2>Dashboard Titel</h2>
               </div>
               <div className="admin-card-body">
-                <div className="admin-info">
-                  <span className="admin-label">Titel:</span>
-                  <span>{dashboardConfig.title}</span>
-                </div>
-                <div className="admin-info">
-                  <span className="admin-label">Aktive Widgets:</span>
-                  <span>
-                    {hasAnyWidgetEnabled()
-                      ? Object.entries(dashboardConfig.widgets)
-                          .filter(([_, widget]) => widget.enabled)
-                          .length + ' aktiviert'
-                      : 'Keine Widgets aktiviert'}
-                  </span>
-                </div>
-                <div className="widget-status-list">
-                  {Object.entries(dashboardConfig.widgets).map(([key, widget]) => (
-                    <div key={key} className="widget-status-item">
-                      <span className={`widget-status-dot ${widget.enabled ? 'enabled' : 'disabled'}`}></span>
-                      <span>{
-                        key === 'systemMetrics' ? 'System-Metriken' :
-                        key === 'historicalChart' ? 'Historische Daten' :
-                        'Gerätestatus'
-                      }</span>
-                    </div>
-                  ))}
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <input
+                    type="text"
+                    value={dashboardTitle}
+                    onChange={(e) => setDashboardTitle(e.target.value)}
+                    className="form-input"
+                    placeholder="Dashboard Titel"
+                  />
                 </div>
                 <button
                   className="btn btn-primary"
-                  onClick={() => setShowDashboardSettings(true)}
+                  onClick={handleTitleSave}
                 >
-                  <Layout size={20} />
-                  Dashboard bearbeiten
+                  Titel speichern
                 </button>
               </div>
+            </div>
+          </div>
+
+          <div className="admin-card full-width">
+            <div className="admin-card-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
+                <Plus size={24} />
+                <h2>Dashboard Kacheln</h2>
+              </div>
+              <button className="btn btn-primary" onClick={handleAddTile}>
+                <Plus size={20} />
+                Neue Kachel
+              </button>
+            </div>
+            <div className="admin-card-body">
+              {dashboardConfig.tiles.length === 0 ? (
+                <div className="empty-tiles">
+                  <p>Noch keine Kacheln erstellt</p>
+                  <p className="help-text">
+                    Klicke auf "Neue Kachel" um deine erste Kachel hinzuzufügen
+                  </p>
+                </div>
+              ) : (
+                <div className="tiles-list">
+                  {dashboardConfig.tiles.map((tile) => (
+                    <div key={tile.id} className="tile-item">
+                      <div className="tile-item-info">
+                        {tile.icon && <span className="tile-item-icon">{tile.icon}</span>}
+                        <div>
+                          <div className="tile-item-title">{tile.title}</div>
+                          <div className="tile-item-meta">
+                            <span className="tile-item-type">
+                              {tile.type === 'value' && '📊 Wert-Anzeige'}
+                              {tile.type === 'multi-value' && '📊 Multi-Wert-Anzeige'}
+                              {tile.type === 'toggle' && '🔘 Schalter'}
+                              {tile.type === 'button' && '🔲 Taster'}
+                            </span>
+                            <span className="tile-item-entity">
+                              {tile.type === 'multi-value'
+                                ? `${tile.entities.length} Entities`
+                                : tile.entityId}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="tile-item-actions">
+                        <button
+                          className="btn-icon"
+                          onClick={() => handleEditTile(tile)}
+                          title="Bearbeiten"
+                        >
+                          <Edit2 size={18} />
+                        </button>
+                        <button
+                          className="btn-icon btn-danger"
+                          onClick={() => handleDeleteTile(tile.id)}
+                          title="Löschen"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -170,11 +253,12 @@ export function Admin() {
         onSave={handleConfigSave}
       />
 
-      <DashboardSettings
-        isOpen={showDashboardSettings}
-        onClose={() => setShowDashboardSettings(false)}
-        onSave={handleDashboardSave}
-        currentConfig={dashboardConfig}
+      <TileEditor
+        isOpen={showTileEditor}
+        onClose={() => setShowTileEditor(false)}
+        onSave={handleSaveTile}
+        onDelete={editingTile ? () => handleDeleteTile(editingTile.id) : undefined}
+        tile={editingTile}
       />
     </div>
   );
