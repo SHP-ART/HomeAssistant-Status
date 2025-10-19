@@ -4,15 +4,16 @@
 
 Diese Anleitung zeigt, wie du die Statusseite über das Internet erreichbar machst, während Home Assistant nur in deinem lokalen Netzwerk läuft.
 
-**Wichtig:** Der Admin-Bereich (`/admin`) ist nur aus dem lokalen Netzwerk erreichbar, während das öffentliche Dashboard (`/`) für alle zugänglich ist.
+**Wichtig:** Der Admin-Bereich (`/admin`) ist nur aus dem lokalen Netzwerk erreichbar, während das öffentliche Dashboard (`/`) für alle zugänglich ist. Das Admin-Dashboard (`/adminDashboard`) kann mit Passwortschutz auch aus dem Internet erreichbar gemacht werden (siehe ADMIN_AUTHENTICATION.md).
 
 ## Architektur
 
 ```
 Internet
    ↓
-https://ha-status.deine-domain.de (Dashboard - öffentlich)
-https://ha-status.deine-domain.de/admin (Admin - NUR lokal)
+https://ha-status.deine-domain.de (Dashboard - öffentlich, read-only)
+https://ha-status.deine-domain.de/admin (Admin-Konfiguration - NUR lokal)
+https://ha-status.deine-domain.de/adminDashboard (Admin-Dashboard - passwortgeschützt)
    ↓
 Nginx Proxy Manager auf deinem Server
    ↓ (nur /api Anfragen werden weitergeleitet)
@@ -58,6 +59,20 @@ location /admin {
     # Zusätzlicher Schutz: Zeige generische Fehlermeldung
     error_page 403 = @forbidden;
 }
+
+# Admin-Dashboard mit HTTP Basic Auth (optional, siehe ADMIN_AUTHENTICATION.md)
+# Entferne den Kommentar (#), wenn du Passwortschutz aktivieren möchtest
+#location /adminDashboard {
+#    auth_basic "Admin-Dashboard";
+#    auth_basic_user_file /data/nginx/custom/htpasswd_ha_admin;
+#
+#    # Optional: Lokales Netzwerk ohne Passwort
+#    satisfy any;
+#    allow 192.168.12.0/24;
+#    deny all;
+#
+#    try_files $uri $uri/ /index.html;
+#}
 
 location @forbidden {
     return 404;  # Gibt 404 statt 403 zurück (versteckt dass Admin-Seite existiert)

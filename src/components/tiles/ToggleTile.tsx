@@ -5,9 +5,10 @@ import { ToggleLeft, ToggleRight } from 'lucide-react';
 
 interface ToggleTileProps {
   tile: ToggleTileType;
+  readOnly?: boolean;
 }
 
-export function ToggleTile({ tile }: ToggleTileProps) {
+export function ToggleTile({ tile, readOnly = false }: ToggleTileProps) {
   const [isOn, setIsOn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [toggling, setToggling] = useState(false);
@@ -30,7 +31,7 @@ export function ToggleTile({ tile }: ToggleTileProps) {
   };
 
   const handleToggle = async () => {
-    if (toggling) return;
+    if (toggling || readOnly) return;
 
     setToggling(true);
     try {
@@ -65,15 +66,21 @@ export function ToggleTile({ tile }: ToggleTileProps) {
         <button
           className={`tile-toggle-button ${isOn ? 'active' : ''}`}
           onClick={handleToggle}
-          disabled={loading || toggling}
+          disabled={loading || toggling || readOnly}
+          title={readOnly ? 'Nur im Admin-Bereich verfügbar' : undefined}
         >
           <div className="toggle-track">
             <div className="toggle-thumb"></div>
           </div>
           <span className="toggle-label">
-            {loading ? 'Laden...' : toggling ? 'Schalte...' : isOn ? 'Ein' : 'Aus'}
+            {loading ? 'Laden...' : toggling ? 'Schalte...' : readOnly ? '🔒' : isOn ? 'Ein' : 'Aus'}
           </span>
         </button>
+        {readOnly && (
+          <div className="tile-status" style={{ color: '#f59e0b', marginTop: '0.5rem' }}>
+            ⚠️ Steuerung nur im Admin-Bereich
+          </div>
+        )}
       </div>
     </div>
   );

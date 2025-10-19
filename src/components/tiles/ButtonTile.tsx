@@ -5,14 +5,15 @@ import { Power } from 'lucide-react';
 
 interface ButtonTileProps {
   tile: ButtonTileType;
+  readOnly?: boolean;
 }
 
-export function ButtonTile({ tile }: ButtonTileProps) {
+export function ButtonTile({ tile, readOnly = false }: ButtonTileProps) {
   const [executing, setExecuting] = useState(false);
   const [lastAction, setLastAction] = useState<string | null>(null);
 
   const handleClick = async () => {
-    if (executing) return;
+    if (executing || readOnly) return;
 
     setExecuting(true);
     try {
@@ -43,12 +44,18 @@ export function ButtonTile({ tile }: ButtonTileProps) {
         <button
           className={`tile-button ${tile.color || 'primary'}`}
           onClick={handleClick}
-          disabled={executing}
+          disabled={executing || readOnly}
           style={tile.color ? { background: tile.color } : undefined}
+          title={readOnly ? 'Nur im Admin-Bereich verfügbar' : undefined}
         >
-          {executing ? 'Wird ausgeführt...' : 'Ausführen'}
+          {executing ? 'Wird ausgeführt...' : readOnly ? '🔒 Gesperrt' : 'Ausführen'}
         </button>
-        {lastAction && (
+        {readOnly && (
+          <div className="tile-status" style={{ color: '#f59e0b' }}>
+            ⚠️ Steuerung nur im Admin-Bereich
+          </div>
+        )}
+        {!readOnly && lastAction && (
           <div className="tile-status">Zuletzt: {lastAction}</div>
         )}
       </div>

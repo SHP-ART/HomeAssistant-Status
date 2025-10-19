@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
-import type { Tile, TileType, EntityConfig } from '../types/dashboard';
+import type { Tile, TileType, TileSize, EntityConfig } from '../types/dashboard';
 
 interface TileEditorProps {
   isOpen: boolean;
@@ -18,6 +18,7 @@ export function TileEditor({ isOpen, onClose, onSave, onDelete, tile }: TileEdit
   const [service, setService] = useState('toggle');
   const [icon, setIcon] = useState('');
   const [color, setColor] = useState('');
+  const [size, setSize] = useState<TileSize>('1x1');
   const [entities, setEntities] = useState<EntityConfig[]>([{ entityId: '', label: '', unit: '' }]);
 
   useEffect(() => {
@@ -25,6 +26,7 @@ export function TileEditor({ isOpen, onClose, onSave, onDelete, tile }: TileEdit
       setType(tile.type);
       setTitle(tile.title);
       setEntityId(tile.entityId || '');
+      setSize(tile.size || '1x1');
       if (tile.type === 'value') {
         setUnit(tile.unit || '');
       }
@@ -45,6 +47,7 @@ export function TileEditor({ isOpen, onClose, onSave, onDelete, tile }: TileEdit
       setService('toggle');
       setIcon('');
       setColor('');
+      setSize('1x1');
       setEntities([{ entityId: '', label: '', unit: '' }]);
     }
   }, [tile, isOpen]);
@@ -65,6 +68,7 @@ export function TileEditor({ isOpen, onClose, onSave, onDelete, tile }: TileEdit
       title,
       order: tile?.order || 0,
       icon: icon || undefined,
+      size: size,
     };
 
     let newTile: Tile;
@@ -169,6 +173,22 @@ export function TileEditor({ isOpen, onClose, onSave, onDelete, tile }: TileEdit
               onChange={(e) => setTitle(e.target.value)}
               className="form-input"
             />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="tile-size">Kachelgröße</label>
+            <select
+              id="tile-size"
+              value={size}
+              onChange={(e) => setSize(e.target.value as TileSize)}
+              className="form-input"
+            >
+              <option value="1x1">1x1 (Klein)</option>
+              <option value="2x1">2x1 (Breit)</option>
+              <option value="1x2">1x2 (Hoch)</option>
+              <option value="2x2">2x2 (Groß)</option>
+            </select>
+            <small>Größe der Kachel im Dashboard-Raster</small>
           </div>
 
           {type !== 'multi-value' && (

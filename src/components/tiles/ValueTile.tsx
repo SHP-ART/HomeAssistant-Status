@@ -50,9 +50,6 @@ export function ValueTile({ tile }: ValueTileProps) {
             value
           )}
         </div>
-        {tile.showLabel && tile.entityId && (
-          <div className="tile-label">{tile.entityId.split('.')[1]}</div>
-        )}
       </div>
     </div>
   );

@@ -72,9 +72,11 @@ export function MultiValueTile({ tile }: MultiValueTileProps) {
             const valueData = values.find((v) => v.entityId === entity.entityId);
             return (
               <div key={entity.entityId} className="multi-value-item">
-                <div className="multi-value-label">
-                  {entity.label || entity.entityId.split('.')[1]}
-                </div>
+                {entity.label && (
+                  <div className="multi-value-label">
+                    {entity.label}
+                  </div>
+                )}
                 <div className="multi-value-value">
                   {valueData?.loading ? (
                     <span className="tile-loading">...</span>
