@@ -425,21 +425,243 @@ Verwende stattdessen `/adminDashboard` mit Passwortschutz für externen Zugriff 
 
 ## 🏗️ Projekt-Roadmap
 
-### Aktuell implementiert ✅
-- [x] Flexibles Kachel-System (4 Typen)
-- [x] Drei-Stufen-Zugriffssystem
+### ✅ Aktuell implementiert
+- [x] Flexibles Kachel-System (4 Typen: Value, Multi-Value, Button, Toggle)
+- [x] Drei-Stufen-Zugriffssystem (/, /admin, /adminDashboard)
 - [x] Drag & Drop Neuanordnung
-- [x] Import/Export Konfiguration
-- [x] Responsive Grid-Layout
+- [x] Import/Export Konfiguration (JSON Backup)
+- [x] Responsive Grid-Layout (Desktop/Tablet/Mobile)
 - [x] HTTP Basic Auth Support
+- [x] Entity Browser (automatisches Laden aller Entities)
+- [x] Flexible Kachel-Größen (1x1, 2x1, 1x2, 2x2)
 
-### Geplant 🚀
-- [ ] Graphen/Charts für historische Daten
-- [ ] Kamera-Kacheln (Image/Stream)
-- [ ] Benutzer-Verwaltung mit Rollen
-- [ ] Themes (Hell/Dunkel/Custom)
-- [ ] Mobile App (PWA)
-- [ ] Multi-Dashboard Support
+---
+
+### 🎯 TODO-Liste (nach Priorität)
+
+#### 🔥 Hohe Priorität - Benutzerfreundlichkeit
+
+- [ ] **Kachel-Vorschau im TileEditor**
+  - Live-Vorschau während der Bearbeitung
+  - Zeigt sofort, wie die Kachel aussehen wird
+  - Verhindert Trial-and-Error
+  - _Aufwand: ~30 Min | Impact: ⭐⭐⭐⭐⭐_
+
+- [ ] **Toast-Benachrichtigungen**
+  - Erfolgs-/Fehlermeldungen anzeigen
+  - Library: `react-hot-toast`
+  - Feedback für Benutzeraktionen (Speichern, Löschen, Fehler)
+  - _Aufwand: ~20 Min | Impact: ⭐⭐⭐⭐_
+
+- [ ] **Besseres Fehler-Feedback**
+  - Zeige genau, welche Entity nicht gefunden wurde
+  - Verbindungsstatus deutlicher anzeigen
+  - Fehlerhafte Kacheln rot markieren
+  - _Aufwand: ~40 Min | Impact: ⭐⭐⭐⭐_
+
+- [ ] **Loading States verbessern**
+  - Skeleton Screens statt "Laden..."
+  - Progress Bar beim Import/Export
+  - Spinner für Entity-Dropdown
+  - _Aufwand: ~1h | Impact: ⭐⭐⭐_
+
+---
+
+#### 🚀 Mittlere Priorität - Funktionalität
+
+- [ ] **Historische Daten & Charts**
+  - Line Charts für Temperatur/Sensoren über Zeit
+  - Area Charts für Energie-Verbrauch
+  - Konfigurierbare Zeiträume (24h, 7d, 30d)
+  - Chart-Kachel-Typ hinzufügen
+  - _Aufwand: ~2h | Impact: ⭐⭐⭐⭐⭐_
+
+- [ ] **Kamera-Kachel**
+  - Kamera-Feeds anzeigen (entity: `camera.*`)
+  - Konfigurierbares Refresh-Interval
+  - Optional: PTZ-Controls für steuerbare Kameras
+  - _Aufwand: ~1.5h | Impact: ⭐⭐⭐⭐_
+
+- [ ] **Gruppierung & Räume**
+  - Kacheln in Räume gruppieren (Wohnzimmer, Schlafzimmer, etc.)
+  - Collapsible Sections
+  - Tabs für verschiedene Bereiche
+  - Reihenfolge der Gruppen änderbar
+  - _Aufwand: ~3h | Impact: ⭐⭐⭐⭐⭐_
+
+- [ ] **Szenen-Kachel**
+  - Mehrere Aktionen in einer Kachel kombinieren
+  - z.B. "Gute Nacht" → Alle Lichter aus + Heizung runter
+  - Szenen aus Home Assistant importieren
+  - _Aufwand: ~1h | Impact: ⭐⭐⭐⭐_
+
+- [ ] **Bedingte Kacheln**
+  - Kacheln nur unter bestimmten Bedingungen anzeigen
+  - z.B. "Fenster offen"-Warnung nur wenn Fenster offen
+  - Template-basierte Bedingungen
+  - _Aufwand: ~2h | Impact: ⭐⭐⭐_
+
+- [ ] **Wetter-Kachel**
+  - Wetter-Integration (OpenWeather, DWD, etc.)
+  - 5-Tage-Vorhersage
+  - Icons für Wetterbedingungen
+  - _Aufwand: ~1.5h | Impact: ⭐⭐⭐⭐_
+
+---
+
+#### 🎨 Niedrige Priorität - Design & UX
+
+- [ ] **Themes & Dark/Light Mode**
+  - Light Mode Toggle
+  - Custom Color Themes
+  - Theme-Builder im Admin-Bereich
+  - Persistierung der Theme-Wahl
+  - _Aufwand: ~2h | Impact: ⭐⭐⭐_
+
+- [ ] **Animationen verbessern**
+  - Smooth Transitions beim Drag & Drop
+  - Fade-in für neue Kacheln
+  - Button Ripple Effects
+  - Hover-Animationen
+  - _Aufwand: ~1h | Impact: ⭐⭐_
+
+- [ ] **Custom Icons**
+  - Upload eigener Icon-Dateien
+  - Integration von Icon-Libraries (Material Icons, Font Awesome)
+  - Icon-Picker im TileEditor
+  - _Aufwand: ~1.5h | Impact: ⭐⭐⭐_
+
+- [ ] **Kachel-Hintergründe**
+  - Custom Background-Colors pro Kachel
+  - Gradient-Optionen
+  - Hintergrundbild-Support
+  - _Aufwand: ~1h | Impact: ⭐⭐_
+
+---
+
+#### 📱 Mobile & PWA
+
+- [ ] **Progressive Web App (PWA)**
+  - Installierbar auf Smartphone/Desktop
+  - Offline-Funktionalität (Service Worker)
+  - App-Icon & Splash Screen
+  - Manifest.json konfigurieren
+  - _Aufwand: ~2h | Impact: ⭐⭐⭐⭐⭐_
+
+- [ ] **Push Notifications (optional)**
+  - Benachrichtigungen bei wichtigen Events
+  - z.B. "Tür offen seit 10 Minuten"
+  - Konfigurierbare Trigger
+  - _Aufwand: ~3h | Impact: ⭐⭐⭐_
+
+- [ ] **Touch-Gesten**
+  - Swipe für Navigation
+  - Long-Press für Kachel-Optionen
+  - Pinch-to-Zoom (optional)
+  - _Aufwand: ~1.5h | Impact: ⭐⭐_
+
+---
+
+#### 🔧 Technische Verbesserungen
+
+- [ ] **Error Boundary**
+  - Verhindert, dass eine fehlerhafte Kachel das ganze Dashboard crasht
+  - Fallback-UI für fehlerhafte Komponenten
+  - Error Reporting (optional: Sentry)
+  - _Aufwand: ~30 Min | Impact: ⭐⭐⭐⭐_
+
+- [ ] **Performance Optimierung**
+  - React.memo für Tiles (weniger Re-Renders)
+  - Virtualisierung bei vielen Kacheln (react-window)
+  - Lazy Loading für nicht-sichtbare Kacheln
+  - _Aufwand: ~2h | Impact: ⭐⭐⭐_
+
+- [ ] **TypeScript Strictness**
+  - Stricter Type Checking
+  - Discriminated Unions perfektionieren
+  - Type Guards für alle Tile-Typen
+  - _Aufwand: ~1h | Impact: ⭐⭐_
+
+- [ ] **Testing**
+  - Unit Tests für kritische Funktionen (Vitest)
+  - Component Tests für Tiles
+  - E2E Tests (Playwright)
+  - _Aufwand: ~4h | Impact: ⭐⭐⭐_
+
+- [ ] **Mehrsprachigkeit (i18n)**
+  - Englisch / Deutsch umschaltbar
+  - Browser-Sprache automatisch erkennen
+  - react-i18next Integration
+  - _Aufwand: ~2h | Impact: ⭐⭐⭐_
+
+---
+
+#### 🔐 Sicherheit
+
+- [ ] **Token Encryption**
+  - Access Token im Browser verschlüsseln
+  - Crypto-API nutzen statt plaintext localStorage
+  - _Aufwand: ~1h | Impact: ⭐⭐⭐_
+
+- [ ] **Session Timeout**
+  - Automatisches Logout nach Inaktivität
+  - Re-Authentication erforderlich
+  - Konfigurierbare Timeout-Dauer
+  - _Aufwand: ~1h | Impact: ⭐⭐_
+
+- [ ] **Audit Log**
+  - Wer hat wann welche Änderung gemacht
+  - Hilfreich bei mehreren Benutzern
+  - Export als CSV
+  - _Aufwand: ~2h | Impact: ⭐⭐_
+
+- [ ] **Zwei-Faktor-Authentifizierung (2FA)**
+  - Optional für Admin-Dashboard
+  - TOTP-basiert (Google Authenticator)
+  - _Aufwand: ~3h | Impact: ⭐⭐⭐_
+
+---
+
+#### 🌐 Erweiterte Features
+
+- [ ] **Multi-Dashboard Support**
+  - Mehrere Dashboards erstellen (Wohnzimmer, Schlafzimmer, etc.)
+  - Dashboard-Switcher im Header
+  - Separate Konfigurationen pro Dashboard
+  - _Aufwand: ~3h | Impact: ⭐⭐⭐⭐_
+
+- [ ] **Benutzer-Verwaltung**
+  - Mehrere Benutzer mit verschiedenen Rollen
+  - Admin, Editor, Viewer Rollen
+  - Rechteverwaltung pro Dashboard
+  - _Aufwand: ~5h | Impact: ⭐⭐⭐_
+
+- [ ] **Automationen & Scripts**
+  - Automationen aus HA importieren
+  - Scripts direkt vom Dashboard ausführen
+  - Automation-Builder (optional)
+  - _Aufwand: ~2h | Impact: ⭐⭐⭐⭐_
+
+- [ ] **Kalender-Integration**
+  - Google Calendar / iCal Integration
+  - Anzeige bevorstehender Events
+  - Kalender-Kachel
+  - _Aufwand: ~2h | Impact: ⭐⭐⭐_
+
+---
+
+### 📊 Prioritäten-Empfehlung
+
+**Nächste 3 Features (Quick Wins):**
+1. 🥇 Kachel-Vorschau im TileEditor
+2. 🥈 Toast-Benachrichtigungen
+3. 🥉 Error Boundary
+
+**Langfristig (High Impact):**
+1. Historische Daten & Charts
+2. PWA Support
+3. Gruppierung & Räume
+4. Multi-Dashboard Support
 
 ## 🤝 Mitwirken
 
