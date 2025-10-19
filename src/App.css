@@ -1,17 +1,28 @@
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 #root {
-  max-width: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
 }
 
 .app {
   min-height: 100vh;
+  width: 100%;
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   color: #f3f4f6;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Header */
@@ -26,7 +37,7 @@
 }
 
 .header-content {
-  max-width: 1400px;
+  max-width: 1920px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -106,9 +117,13 @@
 
 /* Main Content */
 .app-main {
-  max-width: 1400px;
+  max-width: 1920px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.5rem;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .dashboard {
@@ -685,8 +700,10 @@
 
 /* Admin Page */
 .admin-container {
-  max-width: 1200px;
+  max-width: 1920px;
   margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
 }
 
 .admin-section {
@@ -894,8 +911,7 @@
   grid-template-columns: repeat(4, 1fr);
   grid-auto-rows: minmax(150px, auto);
   gap: 1.5rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .dashboard-tile {
@@ -1169,10 +1185,19 @@
     padding: 1rem;
   }
 
+  .app-header h1 {
+    font-size: 1.25rem;
+  }
+
   .header-content {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header-actions {
+    gap: 0.5rem;
   }
 
   .app-main {
@@ -1215,6 +1240,10 @@
     display: none;
   }
 
+  .admin-container {
+    padding: 1rem;
+  }
+
   .admin-section {
     grid-template-columns: 1fr;
   }
@@ -1225,6 +1254,7 @@
 
   .dashboard-tiles {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   /* Mobile: Alle Tiles auf 1x1 zurücksetzen */
@@ -1236,6 +1266,10 @@
     grid-row: span 1;
   }
 
+  .dashboard-tile {
+    padding: 1rem;
+  }
+
   .tile-item {
     flex-direction: column;
     align-items: flex-start;
@@ -1245,5 +1279,45 @@
   .tile-item-actions {
     width: 100%;
     justify-content: flex-end;
+  }
+}
+
+/* Extra kleine Geräte (Portrait Smartphones) */
+@media (max-width: 480px) {
+  .app-header {
+    padding: 0.75rem;
+  }
+
+  .app-header h1 {
+    font-size: 1.125rem;
+  }
+
+  .app-main {
+    padding: 0.75rem;
+  }
+
+  .admin-container {
+    padding: 0.75rem;
+  }
+
+  .dashboard-tiles {
+    gap: 0.75rem;
+  }
+
+  .dashboard-tile {
+    padding: 0.875rem;
+  }
+
+  .admin-card {
+    padding: 0.875rem;
+  }
+
+  .btn {
+    font-size: 0.875rem;
+    padding: 0.625rem 1rem;
+  }
+
+  .config-button {
+    padding: 0.375rem;
   }
 }
