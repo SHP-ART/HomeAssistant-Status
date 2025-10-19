@@ -367,16 +367,50 @@ export function TileEditor({ isOpen, onClose, onSave, onDelete, tile }: TileEdit
 
             <div className="form-group">
               <label htmlFor="tile-icon">Icon (optional, Emoji)</label>
-              <input
-                id="tile-icon"
-                type="text"
-                placeholder="z.B. 🌡️, 💡, 🔌"
-                value={icon}
-                onChange={(e) => setIcon(e.target.value)}
-                className="form-input"
-                maxLength={2}
-              />
-              <small>Du kannst ein Emoji als Icon verwenden</small>
+              <div className="icon-picker-container">
+                <div className="icon-picker-grid">
+                  {[
+                    '🌡️', '💡', '🔌', '🔋', '📺', '🖥️', '📱', '⌚',
+                    '🎵', '🔊', '📻', '🎥', '📷', '🚗', '🚪', '🔒',
+                    '🪟', '🌤️', '☀️', '🌙', '⭐', '💧', '🌊', '🔥',
+                    '❄️', '🌬️', '💨', '🌡', '📊', '📈', '⚡', '🔆',
+                    '🏠', '🛋️', '🛏️', '🚿', '🚽', '🧹', '🧺', '👕',
+                    '🍽️', '🍳', '☕', '🍷', '🎮', '📖', '✉️', '📬',
+                    '⏰', '⏲️', '🕐', '📅', '🔔', '🚨', '⚠️', '✅',
+                    '❌', '🔴', '🟢', '🟡', '🔵', '⚪', '⚫', '🟣'
+                  ].map((emoji) => (
+                    <button
+                      key={emoji}
+                      type="button"
+                      className={`icon-picker-item ${icon === emoji ? 'selected' : ''}`}
+                      onClick={() => setIcon(emoji)}
+                      title={emoji}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  id="tile-icon"
+                  type="text"
+                  placeholder="Oder eigenes Emoji eingeben..."
+                  value={icon}
+                  onChange={(e) => setIcon(e.target.value)}
+                  className="form-input icon-custom-input"
+                  maxLength={2}
+                />
+                {icon && (
+                  <button
+                    type="button"
+                    className="btn-clear-icon"
+                    onClick={() => setIcon('')}
+                    title="Icon entfernen"
+                  >
+                    ✕ Entfernen
+                  </button>
+                )}
+              </div>
+              <small>Wähle ein Icon aus oder gib ein eigenes Emoji ein</small>
             </div>
           </div>
 

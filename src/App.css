@@ -1193,6 +1193,75 @@ html, body {
   cursor: pointer;
 }
 
+/* Icon Picker */
+.icon-picker-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.icon-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid #374151;
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.icon-picker-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  font-size: 1.5rem;
+  background: rgba(31, 41, 55, 0.5);
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0.25rem;
+}
+
+.icon-picker-item:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: #3b82f6;
+  transform: scale(1.1);
+}
+
+.icon-picker-item.selected {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.icon-custom-input {
+  font-size: 1.125rem;
+  text-align: center;
+}
+
+.btn-clear-icon {
+  padding: 0.5rem 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  align-self: flex-start;
+}
+
+.btn-clear-icon:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #dc2626;
+}
+
 /* Multi-entity tile editor */
 .entities-list {
   display: flex;
@@ -1375,6 +1444,15 @@ html, body {
     transform: scale(1);
     width: 100%;
   }
+
+  .icon-picker-grid {
+    grid-template-columns: repeat(6, 1fr);
+    max-height: 160px;
+  }
+
+  .icon-picker-item {
+    font-size: 1.25rem;
+  }
 }
 
 /* Extra kleine Geräte (Portrait Smartphones) */
@@ -1414,5 +1492,15 @@ html, body {
 
   .config-button {
     padding: 0.375rem;
+  }
+
+  .icon-picker-grid {
+    grid-template-columns: repeat(5, 1fr);
+    max-height: 140px;
+    gap: 0.375rem;
+  }
+
+  .icon-picker-item {
+    font-size: 1.125rem;
   }
 }
